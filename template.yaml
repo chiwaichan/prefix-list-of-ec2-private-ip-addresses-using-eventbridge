@@ -27,6 +27,11 @@ Resources:
       PrefixListName: "eventbridge-managed-prefix-list"
       AddressFamily: "IPv4"
       MaxEntries: 1
+      Entries:
+        - Cidr: !Sub 
+          - '${PrivateIP}/32'
+          - PrivateIP: !GetAtt MyEC2Instance.PrivateIp
+          Description: "initial state added by CloudFormation template"
       Tags:
         - Key: "Name"
           Value: "eventbridge-managed-prefix-list"
@@ -41,7 +46,7 @@ Resources:
       Architectures:
         - x86_64
       Events:
-        HelloWorld:
+        UpdatePrefixList:
           Type: CloudWatchEvent 
           Properties:
             Pattern:
@@ -87,6 +92,7 @@ Resources:
             - logs:PutLogEvents
             Resource: arn:aws:logs:*:*:*
   MyEC2Instance:
+      DependsOn: UpdatePrefixListFunction
       Type: AWS::EC2::Instance
       Properties:
         ImageId: !Ref ImageId
