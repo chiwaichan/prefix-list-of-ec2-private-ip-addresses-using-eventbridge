@@ -1,0 +1,110 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Maintain a registry of Private IP addresses of EC2 instances with a Tag of 'prefix-list'
+
+Globals:
+  Function:
+    Timeout: 10
+
+Parameters:
+  ImageId:
+    Type: String
+    Description: EC2 Image ID to deploy
+
+  SecurityGroupId:
+    Type: String
+    Description: EC2 Security Group ID
+
+  SubnetId:
+    Type: String
+    Description: Subnet ID to deploy the EC2 instance in
+
+Resources:
+  EventbridgeManagedPrefixList:
+    Type: AWS::EC2::PrefixList
+    Properties:
+      PrefixListName: "eventbridge-managed-prefix-list"
+      AddressFamily: "IPv4"
+      MaxEntries: 1
+      Tags:
+        - Key: "Name"
+          Value: "eventbridge-managed-prefix-list"
+
+  UpdatePrefixListFunction:
+    Type: AWS::Serverless::Function 
+    Properties:
+      CodeUri: prefix_list_function
+      Handler: update_prefix_list/app.lambda_handler
+      Runtime: python3.9
+      Role: !GetAtt UpdatePrefixListFunctionExecutionRole.Arn
+      Architectures:
+        - x86_64
+      Events:
+        HelloWorld:
+          Type: CloudWatchEvent 
+          Properties:
+            Pattern:
+              source:
+                - aws.ec2
+              detail-type:
+                - EC2 Instance State-change Notification
+
+  UpdatePrefixListFunctionExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - lambda.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      Path: "/"
+      Policies:
+      - PolicyName: boto3
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action:
+            - ec2:DescribeInstances
+            - ec2:DescribeTags
+            - ec2:DescribeManagedPrefixLists
+            - ec2:GetManagedPrefixListEntries
+            - ec2:ModifyManagedPrefixList
+            Resource: '*'
+      - PolicyName: Logging
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action:
+            - logs:CreateLogGroup
+            - logs:CreateLogStream
+            - logs:PutLogEvents
+            Resource: arn:aws:logs:*:*:*
+  MyEC2Instance:
+      Type: AWS::EC2::Instance
+      Properties:
+        ImageId: !Ref ImageId
+        InstanceType: t2.nano
+        Tags:
+          - Key: Name
+            Value: EC2 instance to test with
+          - Key: prefix-list
+            Value: eventbridge-managed-prefix-list
+        SecurityGroupIds:
+          - !Ref SecurityGroupId
+        SubnetId: !Ref SubnetId
+
+
+Outputs:
+  UpdatePrefixListFunction:
+    Description: "Update Prefix List Lambda Function ARN"
+    Value: !GetAtt UpdatePrefixListFunction.Arn
+  UpdatePrefixListFunctionExecutionRole:
+    Description: "IAM Role created for Update Prefix List function"
+    Value: !GetAtt UpdatePrefixListFunctionExecutionRole.Arn
