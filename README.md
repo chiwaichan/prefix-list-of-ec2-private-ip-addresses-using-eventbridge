@@ -9,7 +9,7 @@ VPC customer-managed prefix list is a great feature to have in a tool box as it 
 
 In this blog we will:
 - Walk-through the proposed solution
-- Deploy the solution from a SAM project hosted in [my GitHub repository](https://github.com/chiwaichan/prefix-list-of-ec2-private-ip-addresses-using-eventbridge)
+- Deploy the solution from a SAM project hosted in my [GitHub repository](https://github.com/chiwaichan/prefix-list-of-ec2-private-ip-addresses-using-eventbridge)
 - Stop the running EC2 instance provisioned by the SAM project's CloudFormation stack - this will de-register the Private IP address of the EC2 instance from the Prefix List (also provisioned by the CloudFormation stack)
 - Start the same EC2 instance - this will register the Private IP address of the provisioned EC2 instance back into the Prefix List
 - Manually create an EC2 instance with a Tag value of "prefix-list=eventbridge-managed-prefix-list"
