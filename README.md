@@ -93,7 +93,7 @@ Let's stop the EC2 instance
 
 ![10](https://github.com/chiwaichan/blog-assets/raw/main/images/maintain-a-prefix-list-of-ec2-private-ip-adresses-using-eventbridge/10-stopping-ec2-instance.png)
 
-We should see the Private IP address of the EC2 instance removed from the Prefix List Entries
+We should see the Private IP address of the EC2 instance removed from the Prefix List Entries, the Max Entries remains as 1 - this is because the minimum value must be 1 even when there are no Entries in the Prefix List
 
 ![11](https://github.com/chiwaichan/blog-assets/raw/main/images/maintain-a-prefix-list-of-ec2-private-ip-adresses-using-eventbridge/11-prefix-list-entry-removed.png)
 
@@ -178,7 +178,7 @@ Let's lanuch a new EC2 instance (using any AMI deployed in any Subnet with any S
 
 ![16](https://github.com/chiwaichan/blog-assets/raw/main/images/maintain-a-prefix-list-of-ec2-private-ip-adresses-using-eventbridge/16-new-ec2-instance-tags.png)
 
-Here we see the Private IP address of the new manually created EC2 instance appear in the Prefix List Entries; also, the Max Entries has been updated to 2.
+Here we see the Private IP address of the new manually created EC2 instance appear in the Prefix List Entries; also, the Max Entries has been updated to 2 by the Lambda function.
 
 ![17](https://github.com/chiwaichan/blog-assets/raw/main/images/maintain-a-prefix-list-of-ec2-private-ip-adresses-using-eventbridge/17-prefix-list-new-ec2-add.png)
 
