@@ -9,9 +9,9 @@ VPC customer-managed prefix list is a great feature to have in a tool box as it 
 
 In this blog we will:
 - Walk-through the proposed solution
-- Deploy the solution from a SAM project hosted in my GitHub repository
+- Deploy the solution from a SAM project hosted in [my GitHub repository](https://github.com/chiwaichan/prefix-list-of-ec2-private-ip-addresses-using-eventbridge)
 - Stop the running EC2 instance provisioned by the SAM project's CloudFormation stack - this will de-register the Private IP address of the EC2 instance from the Prefix List (also provisioned by the CloudFormation stack)
-- Start the same EC2 instance - this will register the Private IP address of the EC2 instance into the Prefix List
+- Start the same EC2 instance - this will register the Private IP address of the provisioned EC2 instance back into the Prefix List
 - Manually create an EC2 instance with a Tag value of "prefix-list=eventbridge-managed-prefix-list"
 
 # Solution
@@ -84,7 +84,7 @@ Here we can see the list of AWS resources deployed in the CloudFormation Stack
 Here we can see the details of the EC2 instance provisioned in a "Running" state. Take note of the Private IPv4 address.
 ![8](https://github.com/chiwaichan/blog-assets/raw/main/images/maintain-a-prefix-list-of-ec2-private-ip-adresses-using-eventbridge/8-ec2-instance.png)
 
-This is a Prefix List provisioned; here we can see the Private IPv4 address of the EC2 instance in the Prefix list entries. Also, note that the Max Entries is currently set to 1.
+This is the Prefix List provisioned; here we can see the Private IPv4 address of the EC2 instance in the Prefix list entries. Also, note that the Max Entries is currently set to 1.
 ![9](https://github.com/chiwaichan/blog-assets/raw/main/images/maintain-a-prefix-list-of-ec2-private-ip-adresses-using-eventbridge/9-prefix-list.png)
 
 # Stopping the running EC2 Instance
@@ -93,7 +93,7 @@ Let's stop the EC2 instance
 
 ![10](https://github.com/chiwaichan/blog-assets/raw/main/images/maintain-a-prefix-list-of-ec2-private-ip-adresses-using-eventbridge/10-stopping-ec2-instance.png)
 
-We should see the Private IP address of the EC2 instance being removed from the Prefix List Entries
+We should see the Private IP address of the EC2 instance removed from the Prefix List Entries
 
 ![11](https://github.com/chiwaichan/blog-assets/raw/main/images/maintain-a-prefix-list-of-ec2-private-ip-adresses-using-eventbridge/11-prefix-list-entry-removed.png)
 
