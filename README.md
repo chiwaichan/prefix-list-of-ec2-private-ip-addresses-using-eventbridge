@@ -136,7 +136,7 @@ We should see the Private IP address of the EC2 instance added back to the Prefi
 
 ![13](https://github.com/chiwaichan/blog-assets/raw/main/images/maintain-a-prefix-list-of-ec2-private-ip-adresses-using-eventbridge/13-prefix-list-add.png)
 
-This is the sniplet of Python code in the [Lambda function](https://github.com/chiwaichan/prefix-list-of-ec2-private-ip-addresses-using-eventbridge/blob/main/prefix_list_function/update_prefix_list/app.py) that addes the Private IP address to the Prefix List:
+This is the sniplet of Python code in the [Lambda function](https://github.com/chiwaichan/prefix-list-of-ec2-private-ip-addresses-using-eventbridge/blob/main/prefix_list_function/update_prefix_list/app.py) that adds the Private IP address to the Prefix List:
 
 ```
 # if the instance state change is 'running' so we add the private IP CIDR to the Prefix List
@@ -169,7 +169,7 @@ if ec2_state == "running":
 
 # Manually create an EC2 instance with a Prefix List Tag 
 
-Let's lanuch a new EC2 instance (using any AMI deployed in any Subnet with any Security Group) with a value of "eventbridge-managed-prefix-list" for the "prefix-list" Tag
+Let's launch a new EC2 instance (using any AMI and deploy it in any Subnet with any Security Group) with a value of "eventbridge-managed-prefix-list" for the "prefix-list" Tag
 
 
 ![14](https://github.com/chiwaichan/blog-assets/raw/main/images/maintain-a-prefix-list-of-ec2-private-ip-adresses-using-eventbridge/14-launch-ec2-instance.png)
@@ -184,5 +184,5 @@ Here we see the Private IP address of the new manually created EC2 instance appe
 
 # Clean up
 
-- Delete the manually created EC2 instance; you can see it removed from the Prefix List and the Prefix List's Max Entries decreased back down to 0
+- Delete the manually created EC2 instance; you can see it removed from the Prefix List and the Prefix List's Max Entries decreased back down to 1 by the Lambda function
 - Delete the CloudFormation stack with the name "prefix-list-of-ec2-private-ip-addresses-using-eventbridge"
