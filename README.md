@@ -1,11 +1,4 @@
-This solution compliments the use of networking solutions in other blogs I have written:
-- [AWS Prefix List](https://chiwaichan.co.nz/2022/05/13/leveraging-aws-prefix-lists)
-- [Work-around for cross-account Transit Gateway Security Group Reference](https://chiwaichan.co.nz/2022/05/13/work-around-for-cross-account-transit-gateway-security-group-reference) 
-
-
-# Introduction
-
-VPC customer-managed prefix list is a great feature to have in a tool box as it provides the ability to track and maintain a list of CIDR block values, that can be referenced by other AWS Networking component’s in their rules and tables. Each Prefix List supports either IPv4 or IPv6 based addresses, and a number of expected Max Entries for the list must be defined; the number of entries in the list cannot exceed the Max Entries. Check out my blog on [AWS Prefix List](https://chiwaichan.co.nz/2022/05/13/leveraging-aws-prefix-lists) to learn how it could be referenced and leveraged by other AWS Networking components.
+AWS VPC customer-managed prefix list is a great feature to have in a tool box as it provides the ability to track and maintain a list of CIDR block values, that can be referenced by other AWS Networking component’s in their rules and tables. Each Prefix List supports either IPv4 or IPv6 based addresses, and a number of expected Max Entries for the list must be defined; the number of entries in the list cannot exceed the Max Entries. Check out my blog on [AWS Prefix List](https://chiwaichan.co.nz/2022/05/13/leveraging-aws-prefix-lists) to learn how it could be referenced and leveraged by other AWS Networking components.
 
 In this blog we will:
 - Walk-through the proposed solution
@@ -186,3 +179,10 @@ Here we see the Private IP address of the new manually created EC2 instance appe
 
 - Delete the manually created EC2 instance; afterwards, you can see it removed from the Prefix List and the Prefix List's Max Entries decreased back down to 1 by the Lambda function
 - Delete the CloudFormation stack with the name "prefix-list-of-ec2-private-ip-addresses-using-eventbridge"
+
+
+This solution compliments the use of networking solutions in other blogs I have written:
+- [Work-around for cross-account Transit Gateway Security Group Reference](https://chiwaichan.co.nz/2022/05/13/work-around-for-cross-account-transit-gateway-security-group-reference) 
+- [AWS Prefix List](https://chiwaichan.co.nz/2022/05/13/leveraging-aws-prefix-lists)
+- [Breaking Down Monolithic Subnets](https://chiwaichan.co.nz/2022/05/20/breaking-down-monolithic-subnets)
+- [Swiss Cheese Network Security: Factorising Security Group Rules into NACLs and Security Group Rules](https://chiwaichan.co.nz/2022/05/06/factorising-security-group-rules-into-nacls-and-security-group-rules)
