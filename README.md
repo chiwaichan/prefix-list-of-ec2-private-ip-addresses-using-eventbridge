@@ -1,4 +1,4 @@
-AWS VPC customer-managed prefix list is a great feature to have in a tool box as it provides the ability to track and maintain a list of CIDR block values, that can be referenced by other AWS Networking component’s in their rules and tables. Each Prefix List supports either IPv4 or IPv6 based addresses, and a number of expected Max Entries for the list must be defined; the number of entries in the list cannot exceed the Max Entries. Check out my blog on [AWS Prefix List](https://chiwaichan.co.nz/2022/05/13/leveraging-aws-prefix-lists) to learn how it could be referenced and leveraged by other AWS Networking components.
+AWS VPC customer-managed prefix list is a great feature to have in a tool box as it provides the ability to track and maintain a list of CIDR block values, that can be referenced by other AWS Networking component’s in their rules and tables. Each Prefix List supports either IPv4 or IPv6 based addresses, and a number of expected Max Entries for the list must be defined; the number of entries in the list cannot exceed the Max Entries. Check out my blog on [AWS Prefix List](https://chiwaichan.co.nz/2022/05/28/leveraging-aws-prefix-lists) to learn how it could be referenced and leveraged by other AWS Networking components.
 
 In this blog we will:
 - Walk-through the proposed solution
@@ -10,11 +10,11 @@ In this blog we will:
 # Solution
 In this solution we propose an architecture to maintain a list of EC2 Private IPs in a Prefix List by leveraging EventBridge to listen for EC2 Instance State Change Events.
 
-![1](https://github.com/chiwaichan/blog-assets/raw/main/images/maintain-a-prefix-list-of-ec2-private-ip-adresses-using-eventbridge/1-eventbridge-ec2-instance-state-events.png)
+![1](https://github.com/chiwaichan/blog-assets/raw/main/images/maintain-a-prefix-list-of-ec2-private-ip-addresses-using-eventbridge/1-eventbridge-ec2-instance-state-events.png)
 
 Depending on the EC2 Instance State Change value we will perform a different action against the Prefix List using a Lambda Function: if the Instance State is “running" then we register the Private IP address into the Prefix List; or, deregister the Private IP address from the Prefix list when the Instance State is “stopping”.
 
-![2](https://github.com/chiwaichan/blog-assets/raw/main/images/maintain-a-prefix-list-of-ec2-private-ip-adresses-using-eventbridge/2-eventbridge-ec2-instance-state-events-sequence.png)
+![2](https://github.com/chiwaichan/blog-assets/raw/main/images/maintain-a-prefix-list-of-ec2-private-ip-addresses-using-eventbridge/2-eventbridge-ec2-instance-state-events-sequence.png)
 
 
 When the event is received by the Lambda function, it will perform a lookup on the Tags of the EC2 instance for a Tag (e.g. prefix-list=eventbridge-managed-prefix-list) that indicates which Prefix List (or Lists) the Lambda function will register/de-register the Private IP against. The Prefix List should be maintained economically - because it affects the quotas of resources that reference this Prefix List as described by the AWS documentation: [Prefix lists concepts and rules](https://docs.aws.amazon.com/vpc/latest/userguide/managed-prefix-lists.html), so the Lambda function should ideally set the Prefix List Max Entries to the number of entries expected in the list before an entry is registered, or, afterwards if an entry de-registered.
@@ -45,7 +45,7 @@ git clone git@github.com:chiwaichan/prefix-list-of-ec2-private-ip-addresses-usin
 cd prefix-list-of-ec2-private-ip-addresses-using-eventbridge/
 ```
 
-![3](https://github.com/chiwaichan/blog-assets/raw/main/images/maintain-a-prefix-list-of-ec2-private-ip-adresses-using-eventbridge/3-git-clone.png)
+![3](https://github.com/chiwaichan/blog-assets/raw/main/images/maintain-a-prefix-list-of-ec2-private-ip-addresses-using-eventbridge/3-git-clone.png)
 
 Run the following command to configure the SAM deploy 
 
@@ -61,34 +61,34 @@ Enter the following arguments in the prompt:
 - Parameter SubnetId: the Subnet ID of the Subnet to deploy the EC2 instance in, e.g. subnet-0123456678
 
 
-![4](https://github.com/chiwaichan/blog-assets/raw/main/images/maintain-a-prefix-list-of-ec2-private-ip-adresses-using-eventbridge/4-sam-deploy.png)
+![4](https://github.com/chiwaichan/blog-assets/raw/main/images/maintain-a-prefix-list-of-ec2-private-ip-addresses-using-eventbridge/4-sam-deploy.png)
 
-![5](https://github.com/chiwaichan/blog-assets/raw/main/images/maintain-a-prefix-list-of-ec2-private-ip-adresses-using-eventbridge/5-sam-deploy.png)
+![5](https://github.com/chiwaichan/blog-assets/raw/main/images/maintain-a-prefix-list-of-ec2-private-ip-addresses-using-eventbridge/5-sam-deploy.png)
 
-![6](https://github.com/chiwaichan/blog-assets/raw/main/images/maintain-a-prefix-list-of-ec2-private-ip-adresses-using-eventbridge/6-sam-deploy.png)
+![6](https://github.com/chiwaichan/blog-assets/raw/main/images/maintain-a-prefix-list-of-ec2-private-ip-addresses-using-eventbridge/6-sam-deploy.png)
 
 ## Confirm the deployment
 Let's check to see that everything has been deployed correctly in our AWS account.
 
 Here we can see the list of AWS resources deployed in the CloudFormation Stack
 
-![7](https://github.com/chiwaichan/blog-assets/raw/main/images/maintain-a-prefix-list-of-ec2-private-ip-adresses-using-eventbridge/7-cloudformation-resources.png)
+![7](https://github.com/chiwaichan/blog-assets/raw/main/images/maintain-a-prefix-list-of-ec2-private-ip-addresses-using-eventbridge/7-cloudformation-resources.png)
 
 Here we can see the details of the EC2 instance provisioned in a "Running" state. Take note of the Private IPv4 address.
-![8](https://github.com/chiwaichan/blog-assets/raw/main/images/maintain-a-prefix-list-of-ec2-private-ip-adresses-using-eventbridge/8-ec2-instance.png)
+![8](https://github.com/chiwaichan/blog-assets/raw/main/images/maintain-a-prefix-list-of-ec2-private-ip-addresses-using-eventbridge/8-ec2-instance.png)
 
 This is the Prefix List provisioned; here we can see the Private IPv4 address of the EC2 instance in the Prefix list entries. Also, note that the Max Entries is currently set to 1.
-![9](https://github.com/chiwaichan/blog-assets/raw/main/images/maintain-a-prefix-list-of-ec2-private-ip-adresses-using-eventbridge/9-prefix-list.png)
+![9](https://github.com/chiwaichan/blog-assets/raw/main/images/maintain-a-prefix-list-of-ec2-private-ip-addresses-using-eventbridge/9-prefix-list.png)
 
 # Stopping the running EC2 Instance
 
 Let's stop the EC2 instance
 
-![10](https://github.com/chiwaichan/blog-assets/raw/main/images/maintain-a-prefix-list-of-ec2-private-ip-adresses-using-eventbridge/10-stopping-ec2-instance.png)
+![10](https://github.com/chiwaichan/blog-assets/raw/main/images/maintain-a-prefix-list-of-ec2-private-ip-addresses-using-eventbridge/10-stopping-ec2-instance.png)
 
 We should see the Private IP address of the EC2 instance removed from the Prefix List Entries, the Max Entries remains as 1 - this is because the minimum value must be 1 even when there are no Entries in the Prefix List
 
-![11](https://github.com/chiwaichan/blog-assets/raw/main/images/maintain-a-prefix-list-of-ec2-private-ip-adresses-using-eventbridge/11-prefix-list-entry-removed.png)
+![11](https://github.com/chiwaichan/blog-assets/raw/main/images/maintain-a-prefix-list-of-ec2-private-ip-addresses-using-eventbridge/11-prefix-list-entry-removed.png)
 
 This is the sniplet of Python code in the [Lambda function](https://github.com/chiwaichan/prefix-list-of-ec2-private-ip-addresses-using-eventbridge/blob/main/prefix_list_function/update_prefix_list/app.py) that removes the Private IP address from the Prefix List:
 
@@ -123,11 +123,11 @@ elif ec2_state == "stopping":
 
 Let's start the EC2 instance
 
-![12](https://github.com/chiwaichan/blog-assets/raw/main/images/maintain-a-prefix-list-of-ec2-private-ip-adresses-using-eventbridge/12-starting-ec2-instance.png)
+![12](https://github.com/chiwaichan/blog-assets/raw/main/images/maintain-a-prefix-list-of-ec2-private-ip-addresses-using-eventbridge/12-starting-ec2-instance.png)
 
 We should see the Private IP address of the EC2 instance added back to the Prefix List Entries. Note the description is different to what it was when we first saw it earlier.
 
-![13](https://github.com/chiwaichan/blog-assets/raw/main/images/maintain-a-prefix-list-of-ec2-private-ip-adresses-using-eventbridge/13-prefix-list-add.png)
+![13](https://github.com/chiwaichan/blog-assets/raw/main/images/maintain-a-prefix-list-of-ec2-private-ip-addresses-using-eventbridge/13-prefix-list-add.png)
 
 This is the sniplet of Python code in the [Lambda function](https://github.com/chiwaichan/prefix-list-of-ec2-private-ip-addresses-using-eventbridge/blob/main/prefix_list_function/update_prefix_list/app.py) that adds the Private IP address to the Prefix List:
 
@@ -165,15 +165,17 @@ if ec2_state == "running":
 Let's launch a new EC2 instance (using any AMI and deploy it in any Subnet with any Security Group) with a value of "eventbridge-managed-prefix-list" for the "prefix-list" Tag, the EventBridge and Lambda will register the Private IP address of this newly created instance into the Prefix List "eventbridge-managed-prefix-list".
 
 
-![14](https://github.com/chiwaichan/blog-assets/raw/main/images/maintain-a-prefix-list-of-ec2-private-ip-adresses-using-eventbridge/14-launch-ec2-instance.png)
+![14](https://github.com/chiwaichan/blog-assets/raw/main/images/maintain-a-prefix-list-of-ec2-private-ip-addresses-using-eventbridge/14-launch-ec2-instance.png)
 
-![15](https://github.com/chiwaichan/blog-assets/raw/main/images/maintain-a-prefix-list-of-ec2-private-ip-adresses-using-eventbridge/15-new-ec2-instance.png)
+![15](https://github.com/chiwaichan/blog-assets/raw/main/images/maintain-a-prefix-list-of-ec2-private-ip-addresses-using-eventbridge/15-new-ec2-instance.png)
 
-![16](https://github.com/chiwaichan/blog-assets/raw/main/images/maintain-a-prefix-list-of-ec2-private-ip-adresses-using-eventbridge/16-new-ec2-instance-tags.png)
+![16](https://github.com/chiwaichan/blog-assets/raw/main/images/maintain-a-prefix-list-of-ec2-private-ip-addresses-using-eventbridge/16-new-ec2-instance-tags.png)
 
 Here we see the Private IP address of the new manually created EC2 instance appear in the Prefix List Entries; also, the Max Entries has been updated to 2 by the Lambda function.
 
-![17](https://github.com/chiwaichan/blog-assets/raw/main/images/maintain-a-prefix-list-of-ec2-private-ip-adresses-using-eventbridge/17-prefix-list-new-ec2-add.png)
+![17](https://github.com/chiwaichan/blog-assets/raw/main/images/maintain-a-prefix-list-of-ec2-private-ip-addresses-using-eventbridge/17-prefix-list-new-ec2-add.png)
+
+FYI, You can adapted this pattern and Lambda function to add or remove Private IP addresses based on the EC2 instance state change value of your choosing.
 
 # Clean up
 
@@ -181,8 +183,9 @@ Here we see the Private IP address of the new manually created EC2 instance appe
 - Delete the CloudFormation stack with the name "prefix-list-of-ec2-private-ip-addresses-using-eventbridge"
 
 
+
 This solution compliments the use of networking solutions in other blogs I have written:
-- [Work-around for cross-account Transit Gateway Security Group Reference](https://chiwaichan.co.nz/2022/05/13/work-around-for-cross-account-transit-gateway-security-group-reference) 
-- [AWS Prefix List](https://chiwaichan.co.nz/2022/05/13/leveraging-aws-prefix-lists)
-- [Breaking Down Monolithic Subnets](https://chiwaichan.co.nz/2022/05/20/breaking-down-monolithic-subnets)
+- [Work-around for cross-account Transit Gateway Security Group Reference](https://chiwaichan.co.nz/2022/05/28/work-around-for-cross-account-transit-gateway-security-group-reference) 
+- [AWS Prefix List](https://chiwaichan.co.nz/2022/05/28/leveraging-aws-prefix-lists)
+- [Breaking Down Monolithic Subnets](https://chiwaichan.co.nz/2022/05/28/breaking-down-monolithic-subnets)
 - [Swiss Cheese Network Security: Factorising Security Group Rules into NACLs and Security Group Rules](https://chiwaichan.co.nz/2022/05/06/factorising-security-group-rules-into-nacls-and-security-group-rules)
